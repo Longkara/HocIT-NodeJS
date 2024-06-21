@@ -1,22 +1,37 @@
+require("dotenv").config();
+const { fileLoader } = require("ejs");
 const express = require("express");
 const { hostname } = require("os");
-const path = require("path"); // Đảm bảo rằng module path được import
-require("dotenv").config();
+const configViewEngine = require("./config/viewEngine");
+const webRoute = require("./routes/web");
+const mysql = require("mysql2");
 
-console.log(">>check env:", process.env);
+// console.log(">>check env:", process.env);
 const app = express(); // Tạo ứng dụng express
 const port = process.env.PORT || 8081; // Đặt cổng
 const hostName = process.env.HOSTNAME;
 
-// Cấu hình template engine
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "ejs"); // Chỉ định view engine là ejs
+// config template engine
+// config static File
+configViewEngine(app);
 
 // Khai báo route
-app.get("/LongHocIT", (req, res) => {
-  res.render("sample.ejs");
+app.use("/api", webRoute);
+
+//create the connection
+const connection = mysql.createConnection({
+  host: "localhost",
+  port: "3307",
+  user: "root", //default password: empty
+  password: "123456",
+  database: "hoidanit",
 });
 
+// A simple SELECT query
+connection.query("select * from Users ", function (err, results, fields) {
+  console.log(">>>>Results= ", results);
+  console.log(">>>>Fields=", fields);
+});
 app.listen(port, hostName, () => {
   console.log(`Ứng dụng đang lắng nghe trên cổng ${port}`);
 });
