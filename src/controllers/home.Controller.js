@@ -1,5 +1,7 @@
+const connection = require("../config/database");
+
 const getHomePage = (req, res) => {
-  res.send("Hello World!");
+  return res.render("home.ejs");
 };
 const getProduct = (req, res) => {
   res.send("Product");
@@ -7,4 +9,21 @@ const getProduct = (req, res) => {
 const getSample = (req, res) => {
   res.render("sample.ejs");
 };
-module.exports = { getHomePage, getProduct, getSample };
+const postCreateUser = (req, res) => {
+  let { email, name, City } = req.body;
+  console.log(">>> Email=", email, ">>> Name=", name, ">>> City=", City);
+  // res.send("Create User");
+
+  // Using placeholders
+  connection.query(
+    `INSERT INTO
+    Users(email, name, city)
+    VALUE(?, ?, ?)`,
+    [(email, name, City)],
+    function (err, results) {
+      console.log(results);
+      res.send("create user success !");
+    }
+  );
+};
+module.exports = { getHomePage, getProduct, getSample, postCreateUser };
